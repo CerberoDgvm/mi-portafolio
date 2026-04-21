@@ -1,0 +1,846 @@
+/* ─────────────────────────────────────────
+   Importamos dos fuentes de Google Fonts:
+   · Playfair Display → títulos elegantes con serifa (estilo cartel años 30)
+   · DM Sans         → cuerpo de texto, limpio y legible
+───────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ─────────────────────────────────────────
+   VARIABLES GLOBALES (tokens de diseño)
+   Cambiar cualquiera de estos valores
+   actualiza TODO el sitio automáticamente.
+───────────────────────────────────────── */
+:root {
+  --white:  #F7F3EC;   /* fondo principal — crema cálido, no blanco puro */
+  --black:  #181410;   /* tinta — casi negro con tono marrón (más orgánico) */
+  --gray:   #6B6560;   /* texto secundario */
+  --lgray:  #E2DDD6;   /* fondos de cards y secciones alternas */
+  --red:    #C8341A;   /* acento principal — el rojo Cuphead */
+  --amber:  #D4961C;   /* acento secundario — detalles y hover del cursor */
+  --stroke: 2.5px;     /* grosor de bordes en todo el sitio */
+}
+
+/* Reset básico: elimina márgenes y rellenos
+   por defecto del navegador */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* el padding no agranda el elemento */
+}
+
+html {
+  scroll-behavior: smooth; /* el scroll entre secciones es suave */
+}
+
+body {
+  background: var(--white);
+  color: var(--black);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden; /* evita scroll horizontal accidental */
+  cursor: none;       /* ocultamos el cursor del sistema — usamos el nuestro */
+}
+
+/* ─────────────────────────────────────────
+   TEXTURA DE GRANO
+   Un SVG con ruido fractal aplicado como
+   fondo fijo. Da esa sensación de papel
+   antiguo / impresión de época.
+   pointer-events:none → no bloquea clics
+   z-index:9997 → flota sobre todo
+───────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0; /* shorthand para top/right/bottom/left: 0 */
+  z-index: 9997;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.042'/%3E%3C/svg%3E");
+  background-size: 256px;
+  opacity: 0.6;
+}
+
+/* ─────────────────────────────────────────
+   CURSOR PERSONALIZADO (guante rubberhose)
+   Dos estados:
+   · .cursor        → posición absoluta en pantalla
+   · .cursor-inner  → el círculo visual
+   · .cursor.big    → cuando está sobre algo clickeable
+───────────────────────────────────────── */
+.cursor {
+  position: fixed;
+  z-index: 99999;
+  pointer-events: none;             /* no interfiere con clics */
+  transform: translate(-50%, -60%); /* centra el cursor en el puntero */
+}
+
+.cursor-inner {
+  width: 22px;
+  height: 22px;
+  background: var(--white);
+  border: var(--stroke) solid var(--black);
+  /* border-radius asimétrico = forma orgánica tipo guante */
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: 2px 2px 0 var(--black);
+  /* transition con cubic-bezier(.34,1.8,.64,1) = efecto spring/rebote */
+  transition: width .25s cubic-bezier(.34,1.8,.64,1),
+              height .25s cubic-bezier(.34,1.8,.64,1),
+              border-radius .25s,
+              background .2s;
+}
+
+/* Estado "grande" cuando el cursor está sobre un elemento interactivo */
+.cursor.big .cursor-inner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 45% 55% / 58% 42% 58% 42%;
+  background: var(--amber); /* se vuelve ámbar */
+}
+
+/* ─────────────────────────────────────────
+   NAVBAR
+───────────────────────────────────────── */
+.nav {
+  position: fixed; /* se queda arriba al hacer scroll */
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 56px;
+  background: rgba(247, 243, 236, 0.92); /* fondo semitransparente */
+  backdrop-filter: blur(14px);            /* efecto vidrio esmerilado */
+  border-bottom: var(--stroke) solid var(--black);
+}
+
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform .35s cubic-bezier(.34,1.8,.64,1);
+}
+.nav-logo em {
+  font-style: italic;
+  color: var(--red); /* el punto rojo en "V.D" */
+}
+.nav-logo:hover {
+  transform: rotate(-2deg) scale(1.05); /* se inclina al hover */
+}
+
+.nav-links {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--gray);
+  padding: 6px 16px;
+  border-radius: 999px; /* píldora perfecta */
+  border: 1.5px solid transparent;
+  display: inline-block;
+  transition: all .28s cubic-bezier(.34,1.5,.64,1);
+}
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--black);
+  border-color: var(--black);
+  transform: rotate(-1.5deg) scale(1.06); /* ligero tambaleo */
+}
+.nav-links a.active {
+  background: var(--lgray);
+}
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 90px 56px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-left { flex: 1; }
+
+/* Línea pequeña antes del texto introductorio */
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 28px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 1.5px;
+  background: var(--red); /* rayita roja decorativa */
+}
+
+/* Nombre principal */
+.hero-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(4rem, 7vw, 7rem); /* responsive: mínimo 4rem, máximo 7rem */
+  font-weight: 900;
+  line-height: .95;
+  letter-spacing: -0.03em;
+}
+/* "Victor" en outline (solo borde, sin relleno) */
+.hero-name .outline {
+  -webkit-text-stroke: 2.5px var(--black);
+  color: transparent;
+}
+/* "Dorado" en rojo itálico */
+.hero-name .italic {
+  font-style: italic;
+  color: var(--red);
+}
+
+/* La rayita horizontal bajo el nombre */
+.hero-rule {
+  width: 60px;
+  height: 3px;
+  background: var(--black);
+  margin: 28px 0;
+  border-radius: 999px;
+  transform-origin: left; /* crece desde la izquierda */
+  animation: ruleIn .6s .4s cubic-bezier(.34,1.5,.64,1) both;
+}
+
+.hero-desc {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--gray);
+  max-width: 400px;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+/* ─────────────────────────────────────────
+   BOTONES
+   La clave rubberhose está en:
+   1. box-shadow sólido (sin blur) = sombra de tinta
+   2. cubic-bezier(.34,1.9,.64,1) = spring exagerado
+   3. :active → se "presiona" con translate
+───────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 11px 26px;
+  border-radius: 999px;
+  border: var(--stroke) solid var(--black);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 var(--black); /* sombra sólida = sensación impresa */
+  transition: transform .38s cubic-bezier(.34,1.9,.64,1),
+              box-shadow .2s,
+              background .2s,
+              color .2s;
+}
+/* Al hacer clic: se "hunde" visualmente */
+.btn:active {
+  transform: translate(3px, 3px) !important;
+  box-shadow: none !important;
+}
+
+.btn-solid {
+  background: var(--black);
+  color: var(--white);
+}
+.btn-solid:hover {
+  background: var(--red);
+  border-color: var(--red);
+  transform: rotate(-2deg) scale(1.05) translateY(-2px);
+  box-shadow: 5px 5px 0 var(--black);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--black);
+}
+.btn-ghost:hover {
+  transform: rotate(2deg) scale(1.05) translateY(-2px);
+  box-shadow: 5px 5px 0 var(--black);
+  background: var(--lgray);
+}
+
+/* ─────────────────────────────────────────
+   ILUSTRACIÓN (Hero visual)
+───────────────────────────────────────── */
+.hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.illo-stage {
+  position: relative;
+  width: 360px;
+  height: 360px;
+}
+
+/* El círculo de fondo */
+.illo-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--lgray);
+  border: var(--stroke) solid var(--black);
+  overflow: hidden;
+  /* Líneas de velocidad sutiles con conic-gradient */
+  background-image: repeating-conic-gradient(
+    rgba(0,0,0,0.025) 0deg 3deg,
+    transparent 3deg 15deg
+  );
+}
+
+/* Anillo exterior punteado que gira lentamente */
+.illo-ring {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(24, 20, 16, 0.18);
+  animation: spinRing 25s linear infinite;
+}
+.illo-ring::before,
+.illo-ring::after {
+  content: '★';
+  font-size: .65rem;
+  color: var(--amber);
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.illo-ring::after {
+  top: auto;
+  bottom: -7px;
+}
+
+/* La imagen/SVG de la ilustración
+   — ESTA es la animación rubberhose principal — */
+.illo-img {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: rubberHero 4s ease-in-out infinite;
+  filter: drop-shadow(4px 6px 0px rgba(24,20,16,0.28));
+}
+
+/* Estrellas decorativas pequeñas */
+.deco {
+  position: absolute;
+  z-index: 4;
+  font-size: 1.1rem;
+  color: var(--amber);
+  -webkit-text-stroke: 1px var(--black);
+}
+.deco.d1 { top: 4%; right: 4%; animation: starPulse 3s 0s ease-in-out infinite; }
+.deco.d2 { bottom: 8%; left: 4%; animation: starPulse 3s .8s ease-in-out infinite; }
+
+/* Burbuja de diálogo */
+.bubble {
+  position: absolute;
+  z-index: 5;
+  top: -12px; right: -20px;
+  background: var(--white);
+  border: var(--stroke) solid var(--black);
+  /* border-radius asimétrico = forma de bocadillo orgánico */
+  border-radius: 50% 50% 50% 20% / 50% 50% 30% 50%;
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  box-shadow: 2px 2px 0 var(--black);
+  white-space: nowrap;
+  animation: bubblePop .5s .8s cubic-bezier(.34,1.9,.64,1) both;
+}
+/* La "colita" del bocadillo */
+.bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px; left: 14px;
+  width: 0; height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid var(--black);
+}
+
+/* ─────────────────────────────────────────
+   DIVISOR ZIGZAG
+   Separa secciones con energía
+───────────────────────────────────────── */
+.zig {
+  height: 20px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+.zig svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ─────────────────────────────────────────
+   CONTENEDOR DE SECCIONES
+───────────────────────────────────────── */
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 90px 56px 70px;
+}
+
+/* Etiqueta pequeña sobre el título */
+.sec-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sec-label::after {
+  content: '';
+  width: 48px;
+  height: 1.5px;
+  background: var(--red);
+  border-radius: 2px;
+}
+
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.sec-title em {
+  font-style: italic;
+  color: var(--red);
+}
+
+/* ─────────────────────────────────────────
+   ABOUT
+───────────────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr; /* columna izquierda un poco más ancha */
+  gap: 64px;
+  margin-top: 56px;
+  align-items: start;
+}
+
+.about-text p {
+  font-size: 0.97rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: #3a3530;
+  margin-bottom: 18px;
+}
+.about-text strong {
+  font-weight: 600;
+  color: var(--black);
+}
+
+/* Chips de habilidades */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 30px;
+}
+.chip {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 16px;
+  border-radius: 999px;
+  border: var(--stroke) solid var(--black);
+  background: transparent;
+  box-shadow: 2px 2px 0 var(--black);
+  cursor: default;
+  transition: transform .38s cubic-bezier(.34,2,.64,1), background .2s, color .2s;
+}
+.chip:hover {
+  /* spring MUY exagerado (.34,2,.64,1) — más que 1 = overshoot */
+  transform: rotate(-4deg) scale(1.14);
+  background: var(--black);
+  color: var(--white);
+  box-shadow: 4px 4px 0 var(--amber);
+}
+
+/* Cards de habilidades — borde izquierdo rojo */
+.acard {
+  padding: 24px 26px;
+  border-left: 3px solid var(--red);
+  background: var(--lgray);
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 16px;
+  transition: transform .35s cubic-bezier(.34,1.6,.64,1);
+}
+.acard:hover {
+  transform: translateX(6px); /* desliza a la derecha al hover */
+}
+.acard h3 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.acard p {
+  font-size: 0.84rem;
+  font-weight: 300;
+  color: var(--gray);
+  line-height: 1.7;
+}
+
+/* ─────────────────────────────────────────
+   PROJECTS
+───────────────────────────────────────── */
+.proj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 56px;
+}
+
+.pcard {
+  background: var(--white);
+  border: var(--stroke) solid var(--black);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 4px 4px 0 var(--black); /* sombra sólida = lenguaje rubberhose */
+  transition: transform .4s cubic-bezier(.34,1.7,.64,1), box-shadow .2s;
+  cursor: pointer;
+}
+.pcard:hover {
+  transform: rotate(-1.5deg) translateY(-7px);
+  box-shadow: 8px 8px 0 var(--black);
+}
+
+.pthumb {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: var(--stroke) solid var(--black);
+  font-size: 3rem;
+  position: relative;
+  overflow: hidden;
+  background: var(--lgray);
+}
+.pthumb-emoji {
+  animation: rubberFloat 3.2s ease-in-out infinite;
+  display: block;
+}
+/* Screentone (trama de puntos estilo cómic) */
+.pthumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(24,20,16,0.07) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+/* Barra de color en la parte superior del thumb */
+.pthumb-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+}
+
+.pbody { padding: 22px; }
+.pbody h3 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+.pbody p {
+  font-size: 0.83rem;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--gray);
+}
+
+.ptags {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.ptag {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 11px;
+  border-radius: 999px;
+  border: 1.5px solid var(--black);
+  color: var(--gray);
+}
+
+.plink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
+  text-decoration: none;
+  border-bottom: 1px solid var(--red);
+  padding-bottom: 1px;
+  transition: gap .2s;
+}
+.plink:hover { gap: 12px; }
+
+/* ─────────────────────────────────────────
+   CONTACT
+───────────────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  margin-top: 56px;
+  align-items: start;
+}
+
+.contact-big {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.6rem, 4.5vw, 4rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 28px;
+}
+.contact-big em {
+  font-style: italic;
+  color: var(--red);
+}
+
+.contact-sub {
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--gray);
+  margin-bottom: 32px;
+}
+
+/* Links de redes sociales */
+.slink {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 18px;
+  background: var(--white);
+  border: var(--stroke) solid var(--black);
+  border-radius: 12px;
+  box-shadow: 3px 3px 0 var(--black);
+  text-decoration: none;
+  color: var(--black);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  transition: transform .35s cubic-bezier(.34,1.8,.64,1), box-shadow .2s;
+}
+.slink:hover {
+  transform: translateX(8px) rotate(.5deg);
+  box-shadow: 5px 5px 0 var(--black);
+}
+.sicon {
+  font-size: 1.1rem;
+  width: 28px;
+  text-align: center;
+}
+
+/* Campos del formulario */
+.rh-field {
+  width: 100%;
+  display: block;
+  padding: 12px 16px;
+  margin-bottom: 13px;
+  background: var(--lgray);
+  border: var(--stroke) solid var(--black);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: var(--black);
+  box-shadow: 2px 2px 0 var(--black);
+  outline: none;
+  resize: none;
+  transition: transform .3s cubic-bezier(.34,1.6,.64,1), box-shadow .2s, border-color .2s;
+}
+.rh-field:focus {
+  transform: scale(1.015) rotate(-.3deg);
+  box-shadow: 4px 4px 0 var(--red);
+  border-color: var(--red);
+}
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+.footer {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 36px;
+  border-top: var(--stroke) solid var(--black);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--gray);
+  background: var(--lgray);
+}
+.footer strong { color: var(--black); }
+
+/* ─────────────────────────────────────────
+   PUNTOS DE NAVEGACIÓN (scroll spy)
+───────────────────────────────────────── */
+.spips {
+  position: fixed;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  z-index: 999;
+}
+.spip {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(24,20,16,.18);
+  border: 1.5px solid rgba(24,20,16,.3);
+  cursor: pointer;
+  transition: all .35s cubic-bezier(.34,1.8,.64,1);
+}
+/* El punto activo se estira verticalmente */
+.spip.on {
+  background: var(--red);
+  transform: scaleY(2.4);
+  border-color: var(--red);
+}
+
+/* ─────────────────────────────────────────
+   ANIMACIONES
+
+   rubberHero → la ilustración principal
+   Combina: translateY (flotar) + rotate (balanceo)
+            + scaleX/scaleY (squash & stretch)
+   Estos tres juntos son la esencia del rubberhose.
+
+   rubberFloat → emojis en las tarjetas (versión simple)
+
+   ruleIn     → la rayita bajo el nombre crece desde la izquierda
+   spinRing   → el anillo exterior gira muy lento
+   starPulse  → las estrellitas se escalan y rotan
+   bubblePop  → la burbuja aparece con spring
+   fadeUp     → entrada de elementos al cargar
+───────────────────────────────────────── */
+@keyframes rubberHero {
+  0%,100% { transform: translateY(0)     rotate(-2deg)  scaleX(1)    scaleY(1); }
+  20%     { transform: translateY(-16px) rotate(2.5deg) scaleX(1.05) scaleY(0.95); }
+  40%     { transform: translateY(-9px)  rotate(-1deg)  scaleX(0.96) scaleY(1.05); }
+  60%     { transform: translateY(-20px) rotate(3deg)   scaleX(1.04) scaleY(0.96); }
+  80%     { transform: translateY(-5px)  rotate(-1.5deg) scaleX(0.98) scaleY(1.03); }
+}
+
+@keyframes rubberFloat {
+  0%,100% { transform: translateY(0) scaleX(1) scaleY(1); }
+  35%     { transform: translateY(-10px) scaleX(1.07) scaleY(0.94); }
+  65%     { transform: translateY(-5px)  scaleX(0.96) scaleY(1.05); }
+}
+
+@keyframes ruleIn {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes spinRing { to { transform: rotate(360deg); } }
+
+@keyframes starPulse {
+  0%,100% { transform: scale(1) rotate(0deg); opacity: .9; }
+  50%     { transform: scale(1.25) rotate(180deg); opacity: 1; }
+}
+
+@keyframes bubblePop {
+  from { transform: scale(0) rotate(-8deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);  opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Clases de animación de entrada con delays */
+.au  { animation: fadeUp .65s cubic-bezier(.22,1,.36,1) both; }
+.au1 { animation-delay: .05s; }
+.au2 { animation-delay: .15s; }
+.au3 { animation-delay: .25s; }
+.au4 { animation-delay: .35s; }
+.au5 { animation-delay: .45s; }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE (móvil)
+───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    padding: 80px 24px 48px;
+    text-align: center;
+  }
+  .hero-cta { justify-content: center; }
+  .hero-eyebrow { justify-content: center; }
+  .about-grid,
+  .contact-grid { grid-template-columns: 1fr; gap: 36px; }
+  .illo-stage { width: 260px; height: 260px; }
+  .wrap { padding: 72px 24px 56px; }
+  .nav { padding: 0 20px; }
+  .spips { display: none; }
+}
