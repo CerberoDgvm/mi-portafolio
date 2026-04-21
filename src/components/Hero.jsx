@@ -4,7 +4,7 @@
 // Contiene: texto de presentación + ilustración animada.
 // ─────────────────────────────────────────
 
-import HeroIllo from './HeroIllo'
+import HeroIllo from './Heroillo'
 
 function Hero() {
   // Scroll suave al hacer clic en los botones
