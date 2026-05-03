@@ -22,12 +22,12 @@ const PROJECTS = [
     link: '#',
   },
   {
-    emoji: '🎮',
-    barColor: '#D4961C', // ámbar
-    title: 'Juego 2D — Unity',
-    desc: 'Platformer 2D con físicas personalizadas, sistema de colisiones y arte de personaje propio.',
-    tags: ['Unity', 'C#', 'Game Design'],
-    link: '#', // reemplaza con el link de itch.io cuando lo subas
+    emoji: "🎯", 
+    barColor: "#D4961C",
+    title: "Habit Tracker",
+    desc: "App de seguimiento de hábitos con estadísticas, racha de días y vistas diaria, semanal y mensual.",
+    tags: ["React","localStorage","CSS"], 
+    link: "https://habittracker-victor.vercel.app" 
   },
   {
     emoji: '🌐',
