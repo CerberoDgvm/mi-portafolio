@@ -1,78 +1,92 @@
 import { useState } from "react"
 
+// Reemplaza eval() con una función propia
+// eval() es inseguro — puede ejecutar cualquier código JavaScript
+// Esta función solo acepta números y operadores válidos
+function calcular(expresion) {
+  // Reemplazamos * y / por operadores seguros
+  // Solo permite números, operadores y punto decimal
+  const soloCaracteresValidos = /^[0-9+\-*/.]+$/.test(expresion)
+  if (!soloCaracteresValidos) return "Error"
+
+  try {
+    // Function() es más seguro que eval() — no tiene acceso al scope
+    return new Function('return ' + expresion)().toString()
+  } catch {
+    return "Error"
+  }
+}
+
 function Calculator() {
-  const [input, setInput] = useState("")
+  const [input,    setInput]    = useState("")
+  const [resultado, setResultado] = useState("")
 
   const handleClick = (value) => {
-    setInput(input + value)
+    // Evita doble operador al inicio
+    if (["+","-","*","/"].includes(value) && input === "") return
+    setInput(prev => prev + value)
   }
 
   const calculate = () => {
-    try {
-      setInput(eval(input).toString())
-    } catch {
-      setInput("Error")
-    }
+    if (!input) return
+    const res = calcular(input)
+    setResultado(res)
+    setInput(res === "Error" ? "" : res)
   }
 
   const clear = () => {
     setInput("")
+    setResultado("")
   }
 
-  return (
-    <div style={{
-      background: "#1e1e1e",
-      padding: "30px",
-      borderRadius: "12px",
-      width: "300px",
-      margin: "0 auto"
-    }}>
-      <input
-        value={input}
-        readOnly
-        style={{
-          width: "100%",
-          padding: "10px",
-          fontSize: "1.5rem",
-          marginBottom: "20px",
-          textAlign: "right"
-        }}
-      />
+  const backspace = () => {
+    setInput(prev => prev.slice(0, -1))
+  }
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
-        gap: "10px"
-      }}>
-        {["7","8","9","/","4","5","6","*","1","2","3","-","0",".","+","="].map((btn) => (
+  const BUTTONS = [
+    { label: "C",   action: clear,              span: 2, type: "danger" },
+    { label: "⌫",   action: backspace,           span: 1, type: "op" },
+    { label: "/",   action: () => handleClick("/"), span: 1, type: "op" },
+    { label: "7",   action: () => handleClick("7"), span: 1, type: "num" },
+    { label: "8",   action: () => handleClick("8"), span: 1, type: "num" },
+    { label: "9",   action: () => handleClick("9"), span: 1, type: "num" },
+    { label: "*",   action: () => handleClick("*"), span: 1, type: "op" },
+    { label: "4",   action: () => handleClick("4"), span: 1, type: "num" },
+    { label: "5",   action: () => handleClick("5"), span: 1, type: "num" },
+    { label: "6",   action: () => handleClick("6"), span: 1, type: "num" },
+    { label: "-",   action: () => handleClick("-"), span: 1, type: "op" },
+    { label: "1",   action: () => handleClick("1"), span: 1, type: "num" },
+    { label: "2",   action: () => handleClick("2"), span: 1, type: "num" },
+    { label: "3",   action: () => handleClick("3"), span: 1, type: "num" },
+    { label: "+",   action: () => handleClick("+"), span: 1, type: "op" },
+    { label: "0",   action: () => handleClick("0"), span: 2, type: "num" },
+    { label: ".",   action: () => handleClick("."), span: 1, type: "num" },
+    { label: "=",   action: calculate,             span: 1, type: "equal" },
+  ]
+
+  return (
+    <div className="calc-wrap">
+
+      {/* Pantalla */}
+      <div className="calc-screen">
+        <span className="calc-history">{resultado && `= ${resultado}`}</span>
+        <span className="calc-input">{input || "0"}</span>
+      </div>
+
+      {/* Botones */}
+      <div className="calc-grid">
+        {BUTTONS.map((btn, i) => (
           <button
-            key={btn}
-            onClick={() => btn === "=" ? calculate() : handleClick(btn)}
-            style={{
-              padding: "15px",
-              fontSize: "1rem",
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer"
-            }}
+            key={i}
+            className={`calc-btn calc-btn--${btn.type}`}
+            style={{ gridColumn: btn.span > 1 ? `span ${btn.span}` : undefined }}
+            onClick={btn.action}
           >
-            {btn}
+            {btn.label}
           </button>
         ))}
-
-        <button
-          onClick={clear}
-          style={{
-            gridColumn: "span 4",
-            padding: "15px",
-            borderRadius: "8px",
-            border: "none",
-            cursor: "pointer"
-          }}
-        >
-          Clear
-        </button>
       </div>
+
     </div>
   )
 }
