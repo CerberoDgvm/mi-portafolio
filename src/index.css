@@ -1060,4 +1060,19 @@ body::before {
 @media (max-width: 768px) {
   .nav-links--desktop { display: none; }
   .nav-hamburger { display: flex; }
+  
+  /* Deshabilita cursor personalizado en móvil */
+  body { cursor: auto; }
+  .cursor { display: none; }
+
+  /* Calculadora centrada en modal móvil */
+  .modal-box {
+    width: 95%;
+    padding: 16px;
+  }
+
+  .calc-wrap {
+    width: 100%;
+    max-width: 100%;
+  }
 }
