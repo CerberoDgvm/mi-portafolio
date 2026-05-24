@@ -1,75 +1,70 @@
-// components/Navbar.jsx
-// ─────────────────────────────────────────
-// Barra de navegación fija.
-//
-// Dos cosas importantes:
-// 1. scrollTo() → hace scroll suave a la sección
-// 2. activeSection → resalta el link de la sección
-//    visible usando IntersectionObserver
-// ─────────────────────────────────────────
+import { useState } from 'react'
 
-import { useState, useEffect } from 'react'
+function Navbar({ activeSection, scrollTo }) {
+  const [menuOpen, setMenuOpen] = useState(false)
 
-// Lista de secciones en orden
-const SECTIONS = ['inicio', 'sobre-mi', 'proyectos', 'contacto']
-const LABELS   = ['Inicio', 'Sobre mí', 'Proyectos', 'Contacto']
+  const links = [
+    { label: 'Inicio',    id: 'inicio' },
+    { label: 'Sobre mí', id: 'sobre-mi' },
+    { label: 'Proyectos', id: 'proyectos' },
+    { label: 'Contacto',  id: 'contacto' },
+  ]
 
-function Navbar() {
-  const [active, setActive] = useState(0)
-
-  useEffect(() => {
-    // IntersectionObserver detecta qué sección está en pantalla
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = SECTIONS.indexOf(entry.target.id)
-            if (idx > -1) setActive(idx)
-          }
-        })
-      },
-      { threshold: 0.35 } // se activa cuando el 35% de la sección es visible
-    )
-
-    SECTIONS.forEach((id) => {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
-    })
-
-    return () => observer.disconnect()
-  }, [])
-
-  // Scroll suave al hacer clic en un link
-  const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  const handleClick = (id) => {
+    scrollTo(id)
+    setMenuOpen(false)
   }
 
   return (
-    <nav className="nav">
-      {/* Logo — clic lleva al inicio */}
-      <div className="nav-logo" onClick={() => scrollTo('inicio')}>
-        V.<em>D</em>
-      </div>
+    <>
+      <nav className="nav">
+        <div className="nav-logo" onClick={() => handleClick('inicio')}>
+          V.<em>D</em>
+        </div>
 
-      {/* Links de navegación */}
-      <ul className="nav-links">
-        {LABELS.map((label, i) => (
-          <li key={label}>
+        {/* Links normales — solo visibles en desktop */}
+        <ul className="nav-links nav-links--desktop">
+          {links.map(l => (
+            <li key={l.id}>
+              <a
+                href="#"
+                className={activeSection === l.id ? 'active' : ''}
+                onClick={e => { e.preventDefault(); handleClick(l.id) }}
+              >
+                {l.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        {/* Botón hamburguesa — solo visible en móvil */}
+        <button
+          className="nav-hamburger"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menú"
+        >
+          <span className={`ham-line ${menuOpen ? 'ham-line--open' : ''}`} />
+          <span className={`ham-line ${menuOpen ? 'ham-line--open' : ''}`} />
+          <span className={`ham-line ${menuOpen ? 'ham-line--open' : ''}`} />
+        </button>
+      </nav>
+
+      {/* Menú móvil — aparece debajo del nav cuando está abierto */}
+      {menuOpen && (
+        <div className="nav-mobile-menu">
+          {links.map(l => (
             <a
+              key={l.id}
               href="#"
-              // Si es la sección activa, añade la clase 'active'
-              className={active === i ? 'active' : ''}
-              onClick={(e) => {
-                e.preventDefault() // evita que el # cambie la URL
-                scrollTo(SECTIONS[i])
-              }}
+              className={`nav-mobile-link ${activeSection === l.id ? 'active' : ''}`}
+              onClick={e => { e.preventDefault(); handleClick(l.id) }}
             >
-              {label}
+              {l.label}
             </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+          ))}
+        </div>
+      )}
+    </>
   )
 }
 

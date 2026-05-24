@@ -1,29 +1,49 @@
-// App.jsx
-// ─────────────────────────────────────────
-// Componente raíz. Solo importa los otros
-// componentes y los ordena en la página.
-// También importa el CSS global.
-// ─────────────────────────────────────────
-
 import './index.css'
-import Navbar    from './components/Navbar'
-import Cursor    from './components/Cursor'
-import Hero      from './components/Hero'
-import About     from './components/About'
-import Projects  from './components/Projects'
-import Contact   from './components/Contact'
-import ZigZag    from './components/Zigzag'
+import { useState, useEffect } from 'react'
+import Navbar   from './components/Navbar'
+import Cursor   from './components/Cursor'
+import Hero     from './components/Hero'
+import About    from './components/About'
+import Projects from './components/Projects'
+import Contact  from './components/Contact'
+import ZigZag   from './components/Zigzag'
+
+const SECTIONS = ['inicio', 'sobre-mi', 'proyectos', 'contacto']
 
 function App() {
+  const [activeSection, setActiveSection] = useState('inicio')
+
+  // scrollTo definida aquí para compartirla con Navbar y Hero
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  // Scroll spy — detecta qué sección está visible
+  useEffect(() => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const id = SECTIONS.find(s => s === e.target.id)
+          if (id) setActiveSection(id)
+        }
+      })
+    }, { threshold: 0.35 })
+
+    SECTIONS.forEach(id => {
+      const el = document.getElementById(id)
+      if (el) obs.observe(el)
+    })
+
+    return () => obs.disconnect()
+  }, [])
+
   return (
     <div>
-      {/* El cursor personalizado flota sobre todo */}
       <Cursor />
 
-      {/* Navbar fija en la parte superior */}
-      <Navbar />
+      {/* Pasamos las dos props que Navbar necesita */}
+      <Navbar scrollTo={scrollTo} activeSection={activeSection} />
 
-      {/* Secciones en orden con divisores entre ellas */}
       <Hero />
       <ZigZag />
       <About />
