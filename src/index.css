@@ -639,6 +639,45 @@ body::before {
 }
 .plink:hover { gap: 12px; }
 
+
+/* Coming soon card */
+.pcard--soon {
+  opacity: 0.75;
+  pointer-events: none; /* no es clickeable */
+}
+.pcard--soon .plink-soon {
+  pointer-events: none;
+}
+
+.pthumb-soon-badge {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(15,14,12,0.85);
+  color: var(--amber);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(212,150,28,0.4);
+  white-space: nowrap;
+}
+
+.plink-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber);
+  font-style: italic;
+}
+
 /* ─────────────────────────────────────────
    CONTACT
 ───────────────────────────────────────── */

@@ -21,6 +21,25 @@ const PROJECTS = [
     modal: false
   },
   { 
+    emoji: "🎬", 
+    barColor: "#C8341A",
+    title: "CineTrack",
+    desc: "Buscador de películas y series con filtros avanzados, favoritos y página de detalle. Consume la API de TMDB en tiempo real.",
+    tags: ["React","TMDB API","React Router"], 
+    link: "https://cinetrack-victor.vercel.app",
+    modal: false
+  },
+  { 
+    emoji: "📊", 
+    barColor: "#2A7F6F",
+    title: "Finance Dashboard",
+    desc: "Dashboard financiero personal con gráficas interactivas, registro de ingresos y gastos, y estadísticas mensuales.",
+    tags: ["React","Recharts","localStorage"], 
+    link: null,
+    modal: false,
+    comingSoon: true
+  },
+  { 
     emoji: "🌐", 
     barColor: "#181410",
     title: "Portafolio Web",
@@ -41,10 +60,14 @@ function Projects() {
 
       <div className="proj-grid">
         {PROJECTS.map((p, i) => (
-          <div key={i} className="pcard">
+          <div key={i} className={`pcard ${p.comingSoon ? 'pcard--soon' : ''}`}>
             <div className="pthumb" style={{ background: 'var(--lgray)' }}>
               <div className="pthumb-bar" style={{ background: p.barColor }}/>
               <span className="pthumb-emoji">{p.emoji}</span>
+              {/* Badge coming soon encima del thumb */}
+              {p.comingSoon && (
+                <span className="pthumb-soon-badge">🚧 Próximamente</span>
+              )}
             </div>
             <div className="pbody">
               <h3>{p.title}</h3>
@@ -52,7 +75,11 @@ function Projects() {
               <div className="ptags">
                 {p.tags.map(t => <span key={t} className="ptag">{t}</span>)}
               </div>
-              {p.modal ? (
+
+              {/* Tres casos: coming soon, modal, o link externo */}
+              {p.comingSoon ? (
+                <span className="plink-soon">En desarrollo 🚧</span>
+              ) : p.modal ? (
                 <button
                   className="plink"
                   style={{ background: 'none', border: 'none', cursor: 'pointer' }}
@@ -70,7 +97,6 @@ function Projects() {
         ))}
       </div>
 
-      
       {modalOpen && createPortal(
         <div className="modal-overlay" onClick={() => setModalOpen(false)}>
           <div className="modal-box" onClick={e => e.stopPropagation()}>
