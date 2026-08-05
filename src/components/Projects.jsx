@@ -30,14 +30,14 @@ const PROJECTS = [
     modal: false
   },
   { 
-    emoji: "📊", 
+     emoji: "📊", 
     barColor: "#2A7F6F",
     title: "Finance Dashboard",
-    desc: "Dashboard financiero personal con gráficas interactivas, registro de ingresos y gastos, y estadísticas mensuales.",
-    tags: ["React","Recharts","localStorage"], 
-    link: null,
+    desc: "Dashboard financiero con gráficas interactivas, presupuesto por categoría, metas de ahorro y exportación a PDF.",
+    tags: ["React","Recharts","jsPDF"], 
+    link: "https://finance-dashboard-victordgm.vercel.app",
     modal: false,
-    comingSoon: true
+    comingSoon: false
   },
   { 
     emoji: "🌐", 
