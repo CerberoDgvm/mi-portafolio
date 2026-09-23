@@ -40,6 +40,16 @@ const PROJECTS = [
     comingSoon: false
   },
   { 
+  emoji: "🧬", 
+  barColor: "#8B4A8B",
+  title: "PokéGen",
+  desc: "Simulador genético y calculadora estocástica para crianza competitiva, desarrollada con React y FastAPI. Integra algoritmos de cruce genético, simulaciones Monte Carlo con 10.000 iteraciones, consumo de datos mediante PokéAPI y un constructor de árboles binarios de hasta 5 niveles y 31 nodos para analizar y optimizar los resultados de crianza.",
+  tags: ["React","FastAPI","NumPy"], 
+  link: "https://pokegenbycerb.vercel.app",
+  modal: false,
+  comingSoon: false
+  },
+  { 
     emoji: "🌐", 
     barColor: "#181410",
     title: "Portafolio Web",
