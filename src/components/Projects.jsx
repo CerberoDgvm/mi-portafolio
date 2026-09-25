@@ -106,8 +106,8 @@ function Projects() {
 
                 {p.title === "PokéGen" && (
                   <a 
-                    href="/pokegen-ejemplo.json" 
-                    download="pokegen-ejemplo.json"
+                    href="/pokegen_clan.json" 
+                    download="pokegen_clan.json"
                     className="plink"
                     style={{ color: 'var(--amber)', borderColor: 'var(--amber)' }}
                   >
