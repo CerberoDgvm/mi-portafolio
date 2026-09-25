@@ -43,7 +43,7 @@ const PROJECTS = [
   emoji: "🧬", 
   barColor: "#8B4A8B",
   title: "PokéGen",
-  desc: "Simulador genético y calculadora estocástica para crianza competitiva, desarrollada con React y FastAPI. Integra algoritmos de cruce genético, simulaciones Monte Carlo con 10.000 iteraciones, consumo de datos mediante PokéAPI y un constructor de árboles binarios de hasta 5 niveles y 31 nodos para analizar y optimizar los resultados de crianza.",
+  desc: "Simulador genético y calculadora estocástica para crianza competitiva, desarrollada con React y FastAPI. Integra algoritmos de cruce genético, simulaciones Monte Carlo con 10.000 iteraciones, consumo de datos mediante PokéAPI y un constructor de árboles binarios de hasta 5 niveles y 31 nodos para analizar y optimizar los resultados de crianza. Incluye un banco de Pokémon de prueba descargable para probarlo al instante.",
   tags: ["React","FastAPI","NumPy"], 
   link: "https://pokegenbycerb.vercel.app",
   modal: false,
@@ -86,22 +86,35 @@ function Projects() {
                 {p.tags.map(t => <span key={t} className="ptag">{t}</span>)}
               </div>
 
-              {/* Tres casos: coming soon, modal, o link externo */}
-              {p.comingSoon ? (
-                <span className="plink-soon">En desarrollo 🚧</span>
-              ) : p.modal ? (
-                <button
-                  className="plink"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-                  onClick={() => setModalOpen(true)}
-                >
-                  Ver proyecto →
-                </button>
-              ) : (
-                <a href={p.link} className="plink" target="_blank" rel="noreferrer">
-                  Ver proyecto →
-                </a>
-              )}
+                            {/* Tres casos: coming soon, modal, o link externo */}
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {p.comingSoon ? (
+                  <span className="plink-soon">En desarrollo 🚧</span>
+                ) : p.modal ? (
+                  <button
+                    className="plink"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                    onClick={() => setModalOpen(true)}
+                  >
+                    Ver proyecto →
+                  </button>
+                ) : (
+                  <a href={p.link} className="plink" target="_blank" rel="noreferrer">
+                    Ver proyecto →
+                  </a>
+                )}
+
+                {p.title === "PokéGen" && (
+                  <a 
+                    href="/pokegen-ejemplo.json" 
+                    download="pokegen-ejemplo.json"
+                    className="plink"
+                    style={{ color: 'var(--amber)', borderColor: 'var(--amber)' }}
+                  >
+                    📥 Banco de prueba
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         ))}
